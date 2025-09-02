@@ -15,10 +15,13 @@ public class WebCorsConfig {
         return new WebMvcConfigurer() {
             @Override public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins(allowedOrigins.split(","))
+                        .allowedOrigins(allowedOrigins.split("\\s*,\\s*")) // 공백 허용
                         .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                         .allowCredentials(false);
+                // .allowedHeaders("*")   // (필요 시) 커스텀 헤더 쓸 때
+                // .exposedHeaders("...") // (필요 시)
             }
         };
     }
 }
+
