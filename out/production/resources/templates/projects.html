@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | dev.hyelim_LAB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+  <link href="/css/base.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-900 text-gray-300 font-mono">
+
+  <!-- Header -->
+<!--  <header class="flex justify-between px-8 py-4 border-b border-gray-600">-->
+<!--    <span class="text-xl">michael-weaver</span>-->
+<!--    <nav class="space-x-8">-->
+<!--      <a href="/home.html" class="hover:text-white">_hello</a>-->
+<!--      <a href="/about.html" class="hover:text-white">_about-me</a>-->
+<!--      <a href="/projects.html" class="text-white border-b-2 border-yellow-400 pb-1">_projects</a>-->
+<!--      <a href="/contact.html" class="hover:text-white">_contact-me</a>-->
+<!--    </nav>-->
+<!--  </header>-->
+
+  <!-- 상단 네비게이션 -->
+  <div th:replace="~{fragments/header :: header}"></div>
+
+  <!-- Main Content -->
+  <main class="flex">
+    <!-- Sidebar Filters -->
+    <aside class="w-64 border-r border-gray-700 p-6">
+      <h2 class="text-lg mb-4">projects</h2>
+      <ul class="space-y-2 text-sm">
+        <li><input type="checkbox" id="react" checked> React</li>
+        <li><input type="checkbox" id="html"> HTML</li>
+        <li><input type="checkbox" id="css"> CSS</li>
+        <li><input type="checkbox" id="vue" checked> Vue</li>
+        <li><input type="checkbox" id="angular"> Angular</li>
+        <li><input type="checkbox" id="gatsby"> Gatsby</li>
+        <li><input type="checkbox" id="flutter"> Flutter</li>
+      </ul>
+    </aside>
+
+    <!-- Projects Grid -->
+    <section class="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectGrid">
+      <!-- JS will insert project cards here -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition">
+        <h2 class="text-xl font-semibold text-indigo-400 mb-2">Portfolio Website</h2>
+        <p class="text-gray-300 mb-4">
+          A personal portfolio built with Spring Boot, Thymeleaf, and Tailwind CSS. Includes email contact form and project showcase.
+        </p>
+        <a href="https://github.com/your-github-id/portfolio" target="_blank" class="text-indigo-300 underline">View Code →</a>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition">
+        <h2 class="text-xl font-semibold text-indigo-400 mb-2">Blog System</h2>
+        <p class="text-gray-300 mb-4">
+          A simple blog system with JPA and Spring Security. Users can create, edit, and delete posts.
+        </p>
+        <a href="https://github.com/your-github-id/blog" target="_blank" class="text-indigo-300 underline">View Code →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+<!--  <footer class="px-8 py-6 border-t border-gray-600">-->
+<!--    <p class="text-xs">find me in:</p>-->
+<!--    <div class="flex space-x-4 mt-2">-->
+<!--      <a href="#" class="w-6 h-6 bg-gray-800 flex items-center justify-center text-white">X</a>-->
+<!--      <a href="#" class="w-6 h-6 bg-gray-800 flex items-center justify-center text-white">in</a>-->
+<!--    </div>-->
+<!--  </footer>-->
+
+  <!-- 하단 푸터 -->
+  <div th:replace="~{fragments/footer :: footer}"></div>
+
+  <script src="/js/projects.js"></script>
+</body>
+</html>

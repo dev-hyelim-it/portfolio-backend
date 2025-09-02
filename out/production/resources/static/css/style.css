@@ -1,0 +1,50 @@
+@layer components {
+  .neon-border {
+    @apply border-2 border-cyan-300 rounded shadow-lg;
+    box-shadow: 0 0 15px #00f7ff;
+  }
+
+  .tab {
+    @apply cursor-pointer px-4 py-2 transition-all duration-300 ease-in-out;
+  }
+
+  .tab-active {
+    @apply text-yellow-400 border-l-2 pl-3 border-yellow-400 bg-gray-800;
+    animation: tabHighlight 0.4s ease forwards;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    color: #6c63ff;
+    text-shadow: 0 0 10px #6c63ff;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tabHighlight {
+  from {
+    background-color: transparent;
+    border-color: transparent;
+    color: #facc15;
+  }
+  to {
+    background-color: #1f2937; /* gray-800 */
+    border-color: #facc15;
+    color: #facc15;
+  }
+}

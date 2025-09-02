@@ -1,0 +1,64 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+/build/
+.out/
+bin/
+# Maven (optional)
+target/
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+*.ipr
+*.iws
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Logs
+*.log
+
+# Spring config (recommend keeping only base file in VCS)
+application-*.yml
+!application.yml
+
+# Secrets / env
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# (Optional) Spring Initializr help file
+HELP.md
+
+# JVM/툴 로그
+hs_err_pid*.log
+replay_pid*.log
+
+# Eclipse (혹시 열어볼 때 대비)
+.project
+.classpath
+.settings/
+
+# 테스트/리포트(쓰면)
+/coverage/
+/surefire-reports/
+/failsafe-reports/

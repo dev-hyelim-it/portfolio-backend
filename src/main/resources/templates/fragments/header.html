@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+	<nav th:fragment="header" class="mb-12">
+		<header class="flex justify-between px-8 py-4 border-b border-gray-600">
+			<section>
+				<span class="text-xl">Dev.Hye-Lim</span>
+				<nav class="space-x-8">
+					<a href="/home" class="text-white border-b-2 border-yellow-400 pb-1">_hello</a>
+					<a href="/about" class="hover:text-white">_about-me</a>
+					<a href="/projects" class="hover:text-white">_projects</a>
+				</nav>
+			</section>
+			<section>
+				<a href="/contact" class="hover:text-white">_contact-me</a>
+			</section>
+		</header>
+	</nav>
+</body>
+</html>

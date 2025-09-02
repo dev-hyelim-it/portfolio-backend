@@ -1,0 +1,29 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+  mail:
+    host: smtp.daum.net
+    port: 465
+    username: ${MAIL_ADDRESS}
+    password: ${MAIL_PWD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+app:
+  cors:
+    allowed-origins: "http://localhost:5173"
