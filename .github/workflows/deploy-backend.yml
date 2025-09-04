@@ -58,6 +58,18 @@ jobs:
           zip -r deploy-bundle.zip application.jar Procfile .ebextensions 2>/dev/null || zip deploy-bundle.zip application.jar Procfile
           echo "BUNDLE_S3_KEY=${{ github.run_number }}-${{ github.sha }}.zip" >> $GITHUB_ENV
 
+      - name: Debug OIDC subject
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const idt = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(Buffer.from(idt.split('.')[1], 'base64').toString());
+            console.log('OIDC sub:', payload.sub);
+            console.log('OIDC aud:', payload.aud);
+            console.log('github.repository:', process.env.GITHUB_REPOSITORY);
+            console.log('github.ref:', process.env.GITHUB_REF);
+
       - name: Configure AWS (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
