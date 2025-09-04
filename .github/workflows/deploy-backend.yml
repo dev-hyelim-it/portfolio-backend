@@ -76,6 +76,12 @@ jobs:
           role-to-assume: ${{ vars.BACKEND_ROLE_ARN }}
           role-session-name: github-backend-deploy
 
+      - name: Who am I (STS)
+        run: aws sts get-caller-identity
+
+      - name: Can I list EB bucket?
+        run: aws s3 ls s3://$EB_S3_BUCKET/ | head
+
       - name: Upload bundle to S3 (EB bucket)
         run: |
           aws s3 cp deploy-bundle.zip s3://$EB_S3_BUCKET/$EB_APP_NAME/${{ env.BUNDLE_S3_KEY }}
