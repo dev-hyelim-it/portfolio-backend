@@ -13,6 +13,7 @@ spring:
     mode: HTML
     encoding: UTF-8
 server:
+  port: ${PORT:5000}
   forward-headers-strategy: framework
 management:
   endpoints:

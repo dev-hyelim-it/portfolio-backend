@@ -1,0 +1,84 @@
+name: Deploy Backend (Elastic Beanstalk)
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "src/**"
+      - "build.gradle"         # Gradle 사용 시
+      - "gradle/**"
+      - "settings.gradle"
+      - "pom.xml"              # Maven 사용 시에는 위 3줄 대신 pom.xml 포함
+      - "Procfile"
+      - ".github/workflows/deploy-backend.yml"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: backend-prod
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  EB_APP_NAME: ${{ vars.EB_APP_NAME }}
+  EB_ENV_NAME: ${{ vars.EB_ENV_NAME }}
+  EB_S3_BUCKET: ${{ vars.EB_S3_BUCKET }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Build (Gradle)
+        if: hashFiles('build.gradle') != ''
+        run: ./gradlew clean bootJar --no-daemon
+
+      - name: Build (Maven)
+        if: hashFiles('pom.xml') != ''
+        run: mvn -B -DskipTests package
+
+      - name: Prepare EB bundle
+        run: |
+          JAR_PATH=$(ls build/libs/*-SNAPSHOT.jar 2>/dev/null || ls build/libs/*.jar 2>/dev/null || ls target/*.jar 2>/dev/null)
+          cp "$JAR_PATH" application.jar
+          zip -r deploy-bundle.zip application.jar Procfile .ebextensions 2>/dev/null || zip deploy-bundle.zip application.jar Procfile
+          echo "BUNDLE_S3_KEY=${{ github.run_number }}-${{ github.sha }}.zip" >> $GITHUB_ENV
+
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.BACKEND_ROLE_ARN }}
+          role-session-name: github-backend-deploy
+
+      - name: Upload bundle to S3 (EB bucket)
+        run: |
+          aws s3 cp deploy-bundle.zip s3://$EB_S3_BUCKET/$EB_APP_NAME/${{ env.BUNDLE_S3_KEY }}
+
+      - name: Create EB application version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name "$EB_APP_NAME" \
+            --version-label "${{ github.run_number }}-${{ github.sha }}" \
+            --source-bundle S3Bucket="$EB_S3_BUCKET",S3Key="$EB_APP_NAME/${{ env.BUNDLE_S3_KEY }}"
+
+      - name: Update EB environment
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name "$EB_ENV_NAME" \
+            --version-label "${{ github.run_number }}-${{ github.sha }}"
+
+      - name: Check EB health (optional)
+        run: |
+          aws elasticbeanstalk describe-environments --environment-names "$EB_ENV_NAME"
