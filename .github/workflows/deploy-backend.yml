@@ -56,7 +56,10 @@ jobs:
           JAR_PATH=$(ls build/libs/*-SNAPSHOT.jar 2>/dev/null || ls build/libs/*.jar 2>/dev/null || ls target/*.jar 2>/dev/null)
           cp "$JAR_PATH" application.jar
           zip -r deploy-bundle.zip application.jar Procfile .ebextensions 2>/dev/null || zip deploy-bundle.zip application.jar Procfile
-          echo "BUNDLE_S3_KEY=${{ github.run_number }}-${{ github.sha }}.zip" >> $GITHUB_ENV
+
+          VERSION_LABEL="${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}"
+          echo "VERSION_LABEL=$VERSION_LABEL" >> $GITHUB_ENV
+          echo "BUNDLE_S3_KEY=$VERSION_LABEL.zip" >> $GITHUB_ENV
 
       - name: Debug OIDC subject
         uses: actions/github-script@v7
@@ -83,21 +86,25 @@ jobs:
         run: aws s3 ls s3://$EB_S3_BUCKET/ | head
 
       - name: Upload bundle to S3 (EB bucket)
-        run: |
-          aws s3 cp deploy-bundle.zip s3://$EB_S3_BUCKET/$EB_APP_NAME/${{ env.BUNDLE_S3_KEY }}
+        run: aws s3 cp deploy-bundle.zip s3://$EB_S3_BUCKET/$EB_APP_NAME/$BUNDLE_S3_KEY
 
-      - name: Create EB application version
+      - name: Create EB application version (idempotent)
         run: |
-          aws elasticbeanstalk create-application-version \
+          EXISTS=$(aws elasticbeanstalk describe-application-versions \
             --application-name "$EB_APP_NAME" \
-            --version-label "${{ github.run_number }}-${{ github.sha }}" \
-            --source-bundle S3Bucket="$EB_S3_BUCKET",S3Key="$EB_APP_NAME/${{ env.BUNDLE_S3_KEY }}"
+            --version-labels "$VERSION_LABEL" \
+            --query 'length(ApplicationVersions)')
+          if [ "$EXISTS" -eq 0 ]; then
+            aws elasticbeanstalk create-application-version \
+              --application-name "$EB_APP_NAME" \
+              --version-label "$VERSION_LABEL" \
+              --source-bundle S3Bucket="$EB_S3_BUCKET",S3Key="$EB_APP_NAME/$BUNDLE_S3_KEY"
+          else
+            echo "EB app version $VERSION_LABEL already exists - skipping create."
+          fi
 
       - name: Update EB environment
-        run: |
-          aws elasticbeanstalk update-environment \
-            --environment-name "$EB_ENV_NAME" \
-            --version-label "${{ github.run_number }}-${{ github.sha }}"
+        run: aws elasticbeanstalk update-environment --environment-name "$EB_ENV_NAME" --version-label "$VERSION_LABEL"
 
       - name: Check EB health (optional)
         run: |
